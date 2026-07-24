@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Light theme (default) */
+:root {
+  --color-primary-100: #EAF1FA;
+  --color-primary-200: #D0E3F7;
+  --color-primary-600: #1565C0;
+  --color-primary-700: #1255a3;
+  --color-success-100: #D9FBE0;
+  --color-success-600: #18A957;
+  --color-danger-100: #FDE7E7;
+  --color-danger-600: #D93636;
+  --color-text-primary: #172033;
+  --color-text-secondary: #667085;
+  --color-border: #E5EAF1;
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-yellow-50: #FFF8D9;
+  --color-yellow-400: #EAB308;
+  --color-gray-50: #F9FAFB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-200: #E5E7EB;
+  --color-gray-300: #D1D5DB;
+  --color-orange-50: #FFF1E8;
+  --color-orange-300: #CD7F32;
+}
+
+/* Dark theme */
+.dark {
+  --color-primary-100: #1a3a5c;
+  --color-primary-200: #1e4580;
+  --color-primary-600: #5b9bd5;
+  --color-primary-700: #7ab8e8;
+  --color-success-100: #1a3320;
+  --color-success-600: #4ade80;
+  --color-danger-100: #3d1515;
+  --color-danger-600: #f87171;
+  --color-text-primary: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-border: #374151;
+  --color-background: #111827;
+  --color-surface: #1f2937;
+  --color-yellow-50: #2d2410;
+  --color-yellow-400: #fbbf24;
+  --color-gray-50: #374151;
+  --color-gray-100: #4b5563;
+  --color-gray-200: #6b7280;
+  --color-gray-300: #9ca3af;
+  --color-orange-50: #2d1a10;
+  --color-orange-300: #d97706;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 text-white px-6 py-2.5 rounded-8 font-medium text-label
+           hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply bg-surface text-text-primary border border-border px-6 py-2.5 rounded-8 font-medium text-label
+           hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-danger {
+    @apply bg-danger-600 text-white px-6 py-2.5 rounded-8 font-medium text-label
+           hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply text-text-secondary px-4 py-2 rounded-8 font-medium text-label
+           hover:bg-gray-100 transition-colors;
+  }
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-border rounded-8 text-body bg-surface text-text-primary
+           focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent
+           placeholder:text-text-secondary disabled:opacity-50;
+  }
+  .card {
+    @apply bg-surface border border-border rounded-12 p-6;
+  }
+  .label-text {
+    @apply text-label font-medium text-text-primary mb-1.5 block;
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "quiz-platform",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "fuser -k 3000/tcp 3001/tcp 2>/dev/null; sleep 1; concurrently \"npm run dev:web\" \"npm run dev:realtime\"",
+    "dev:web": "npm -w apps/web run dev",
+    "dev:realtime": "npm -w apps/realtime run dev",
+    "build": "npm -w packages/shared-types run build && npm -w apps/web run build && npm -w apps/realtime run build",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "lint": "npm -w apps/web run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

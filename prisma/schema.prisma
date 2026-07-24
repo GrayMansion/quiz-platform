@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PARTICIPANT
+  ORGANIZER
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+}
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SessionStatus {
+  LOBBY
+  QUESTION_OPEN
+  QUESTION_CLOSED
+  FINISHED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  role         UserRole @default(PARTICIPANT)
+  createdAt    DateTime @default(now())
+
+  quizzes        Quiz[]
+  participations SessionParticipant[]
+}
+
+model Quiz {
+  id               String   @id @default(cuid())
+  organizerId      String
+  organizer        User     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?
+  category         String?
+  defaultTimeLimit Int      @default(30)
+  defaultPoints    Int      @default(100)
+  rules            String?
+  status           QuizStatus @default(DRAFT)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  questions Question[]
+  sessions  QuizSession[]
+}
+
+model Question {
+  id       String       @id @default(cuid())
+  quizId   String
+  quiz     Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  position Int
+  type     QuestionType
+  text     String
+  imageUrl String?
+  timeLimit Int?
+  points   Int?
+
+  options   AnswerOption[]
+  responses Response[]
+}
+
+model AnswerOption {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  imageUrl   String?
+  isCorrect  Boolean  @default(false)
+  position   Int
+
+  ResponseOption ResponseOption[]
+}
+
+model QuizSession {
+  id                   String        @id @default(cuid())
+  quizId               String
+  quiz                 Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  roomCode             String        @unique
+  status               SessionStatus @default(LOBBY)
+  currentQuestionIndex Int           @default(0)
+  startedAt            DateTime?
+  endedAt              DateTime?
+  createdAt            DateTime      @default(now())
+
+  // Session-level overrides (null = use quiz default)
+  timeLimit         Int?      @default(30)
+  points            Int?      @default(100)
+  autoAdvance       Boolean   @default(false)
+  autoAdvanceDelay  Int       @default(5)
+
+  participants SessionParticipant[]
+  responses    Response[]
+}
+
+model SessionParticipant {
+  id          String   @id @default(cuid())
+  sessionId   String
+  session     QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String
+  joinedAt    DateTime @default(now())
+  totalScore  Int      @default(0)
+
+  responses Response[]
+}
+
+model Response {
+  id            String   @id @default(cuid())
+  sessionId     String
+  session       QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  participantId String
+  participant   SessionParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  questionId    String
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  submittedAt   DateTime @default(now())
+  isCorrect     Boolean  @default(false)
+  awardedPoints Int      @default(0)
+
+  selectedOptions ResponseOption[]
+}
+
+model ResponseOption {
+  id             String   @id @default(cuid())
+  responseId     String
+  response       Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  answerOptionId String
+  answerOption   AnswerOption @relation(fields: [answerOptionId], references: [id], onDelete: Cascade)
+}
